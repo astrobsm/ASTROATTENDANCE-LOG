@@ -98,10 +98,63 @@ ASTROATTENDANCE-LOG/
 ├── fingerprint-service/     # Local Node.js service
 │   ├── src/                 # Express server
 │   └── native/              # .NET fingerprint helper
+├── frontend/api/            # Vercel serverless functions
 └── DP_UareU_WSDK_223/       # DigitalPersona SDK
 ```
 
+## Cloud Database Setup (Vercel Postgres)
+
+The app uses Vercel Postgres for cloud data storage. To set up:
+
+### 1. Create Vercel Postgres Database
+1. Go to your Vercel project dashboard
+2. Navigate to **Storage** tab
+3. Click **Create Database** → **Postgres**
+4. Choose the **Free** tier (Hobby)
+5. Name it `astroattendance-db`
+6. Click **Create**
+
+### 2. Connect to Project
+After creating the database:
+1. Go to your Vercel project → **Settings** → **Environment Variables**
+2. The Postgres connection variables are automatically added:
+   - `POSTGRES_URL`
+   - `POSTGRES_PRISMA_URL`
+   - `POSTGRES_URL_NO_SSL`
+   - `POSTGRES_URL_NON_POOLING`
+   - `POSTGRES_USER`
+   - `POSTGRES_HOST`
+   - `POSTGRES_PASSWORD`
+   - `POSTGRES_DATABASE`
+
+### 3. Initialize Database Tables
+After deployment, visit:
+```
+https://your-app.vercel.app/api/health
+```
+With a POST request to initialize the database tables.
+
+Or use curl:
+```bash
+curl -X POST https://your-app.vercel.app/api/health
+```
+
 ## API Endpoints
+
+### Cloud API (Vercel Serverless Functions)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/health` | Database health check |
+| POST | `/api/health` | Initialize database tables |
+| GET | `/api/staff` | Get all staff |
+| POST | `/api/staff` | Create new staff |
+| PUT | `/api/staff` | Update staff |
+| DELETE | `/api/staff?id=X` | Delete staff |
+| GET | `/api/attendance` | Get attendance records |
+| POST | `/api/attendance` | Clock in/out |
+| GET | `/api/payroll` | Get payroll records |
+| POST | `/api/payroll` | Generate payroll |
 
 ### Fingerprint Service (localhost:5000)
 
@@ -112,6 +165,14 @@ ASTROATTENDANCE-LOG/
 | POST | `/fingerprint/enroll` | Enroll new fingerprint |
 | POST | `/fingerprint/verify` | Verify fingerprint |
 | GET | `/fingerprint/templates` | List enrolled templates |
+
+## Data Storage
+
+The app uses a hybrid storage approach:
+- **IndexedDB (Local)**: Offline-first storage for all data
+- **Vercel Postgres (Cloud)**: Synced cloud storage for backup and multi-device access
+
+Data is automatically synced between local and cloud when online.
 
 ## Default Credentials
 

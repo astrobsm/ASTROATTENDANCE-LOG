@@ -1,7 +1,10 @@
 import { fingerprintApi } from './fingerprint.api';
+import cloudApi from './cloudApi';
 
-// Export API client
+// Export API clients
 export { fingerprintApi };
+export { cloudApi };
+export * from './cloudApi';
 export { generatePayslipPDF, generatePayslipDataURL } from './payslip.generator';
 
 /**
