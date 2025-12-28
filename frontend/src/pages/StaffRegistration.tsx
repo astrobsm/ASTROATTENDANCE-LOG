@@ -289,9 +289,17 @@ const StaffRegistration: React.FC = () => {
                 </svg>
                 <p className="text-green-700 font-medium">Fingerprint enrolled successfully!</p>
               </div>
+            ) : enrollingFingerprint ? (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <svg className="w-8 h-8 text-blue-600 mx-auto mb-2 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" />
+                </svg>
+                <p className="text-blue-700 font-bold text-lg">PLACE YOUR FINGER ON THE SCANNER NOW!</p>
+                <p className="text-blue-600 text-sm mt-1">Keep your finger still until all 4 scans complete</p>
+              </div>
             ) : (
               <p className="text-gray-500 mb-6">
-                Click the button below and place your finger on the scanner
+                Click the button below and <strong>immediately place your finger on the scanner</strong>
               </p>
             )}
 

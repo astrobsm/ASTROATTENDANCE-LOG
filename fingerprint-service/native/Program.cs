@@ -186,7 +186,7 @@ namespace FingerprintHelper
 
                 // Capture 4 fingerprint samples for enrollment
                 const int requiredSamples = 4;
-                const int maxRetries = 3; // Max retries per sample
+                const int maxRetries = 5; // Max retries per sample (increased for user convenience)
                 var fmds = new List<Fmd>();
 
                 for (int i = 0; i < requiredSamples; i++)
@@ -199,11 +199,11 @@ namespace FingerprintHelper
                         // Output progress message to stderr (so it doesn't interfere with JSON output)
                         Console.Error.WriteLine($"Capture {i + 1} of {requiredSamples} - Place finger on scanner...");
 
-                        // Capture fingerprint with 10 second timeout
+                        // Capture fingerprint with 20 second timeout (increased for user convenience)
                         CaptureResult captureResult = _reader!.Capture(
                             Constants.Formats.Fid.ANSI,
                             Constants.CaptureProcessing.DP_IMG_PROC_DEFAULT,
-                            10000, // 10 second timeout
+                            20000, // 20 second timeout
                             _reader.Capabilities.Resolutions[0]
                         );
 
