@@ -68,3 +68,5 @@ pnpm-lock.yaml
 DP_UareU_WSDK_223/RTE/
 DP_UareU_WSDK_223/SDK/
 DP_UareU_WSDK_223/Redist/
+.vercel
+.env*.local
