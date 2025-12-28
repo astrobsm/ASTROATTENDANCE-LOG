@@ -53,6 +53,7 @@ const StaffRegistration: React.FC = () => {
   const [enrollingFingerprint, setEnrollingFingerprint] = useState(false);
   const [step, setStep] = useState<'details' | 'fingerprint' | 'complete'>('details');
   const [generatedStaffId, setGeneratedStaffId] = useState<string | null>(null);
+  const [enrollmentSuccess, setEnrollmentSuccess] = useState(false);
 
   // Generate a unique staff ID based on name and timestamp
   const generateStaffId = () => {
@@ -87,14 +88,19 @@ const StaffRegistration: React.FC = () => {
     }
 
     setEnrollingFingerprint(true);
+    setEnrollmentSuccess(false);
     
     try {
       const result = await fingerprintService.enrollFingerprint(generatedStaffId);
       
       if (result.success && result.templateId) {
         setFingerprintId(result.templateId);
+        setEnrollmentSuccess(true);
         dispatch(showToast({ type: 'success', message: 'Fingerprint enrolled successfully!' }));
-        setStep('complete');
+        // Auto-advance to complete step after showing success animation
+        setTimeout(() => {
+          setStep('complete');
+        }, 2000);
       } else {
         dispatch(showToast({ type: 'error', message: result.error || 'Failed to enroll fingerprint' }));
       }
@@ -133,6 +139,7 @@ const StaffRegistration: React.FC = () => {
       });
       setFingerprintId(null);
       setGeneratedStaffId(null);
+      setEnrollmentSuccess(false);
       setStep('details');
     } catch (error: any) {
       dispatch(showToast({ type: 'error', message: error.message || 'Failed to register staff' }));
@@ -268,21 +275,45 @@ const StaffRegistration: React.FC = () => {
 
             <div className="mb-8">
               <svg
-                className={`w-32 h-32 mx-auto ${enrollingFingerprint ? 'text-blue-600 animate-pulse' : 'text-gray-400'}`}
+                className={`w-32 h-32 mx-auto transition-all duration-500 ${
+                  enrollmentSuccess 
+                    ? 'text-green-600 scale-110' 
+                    : enrollingFingerprint 
+                    ? 'text-blue-600 animate-pulse' 
+                    : 'text-gray-400'
+                }`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"
-                />
+                {enrollmentSuccess ? (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                ) : (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"
+                  />
+                )}
               </svg>
             </div>
 
-            {fingerprintId ? (
+            {enrollmentSuccess ? (
+              <div className="bg-green-100 border-2 border-green-500 rounded-lg p-6 mb-6 animate-pulse">
+                <svg className="w-16 h-16 text-green-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="text-green-800 font-bold text-2xl">SUCCESS!</p>
+                <p className="text-green-700 font-medium text-lg mt-2">Fingerprint Captured Successfully</p>
+                <p className="text-green-600 text-sm mt-1">Proceeding to next step...</p>
+              </div>
+            ) : fingerprintId ? (
               <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
                 <svg className="w-8 h-8 text-green-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
