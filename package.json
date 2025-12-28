@@ -1,0 +1,11 @@
+{
+  "name": "astroattendance-log-api",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@vercel/postgres": "^0.10.0"
+  },
+  "devDependencies": {
+    "@vercel/node": "^3.2.29"
+  }
+}
