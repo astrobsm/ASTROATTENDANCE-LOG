@@ -85,13 +85,18 @@ namespace FingerprintHelper
                 // Use the first available reader (U.are.U 4500)
                 _reader = readers[0];
                 
-                // Open the reader
-                Constants.ResultCode result = _reader.Open(Constants.CapturePriority.DP_PRIORITY_COOPERATIVE);
+                // Open the reader with exclusive priority to avoid conflicts with other software
+                Constants.ResultCode result = _reader.Open(Constants.CapturePriority.DP_PRIORITY_EXCLUSIVE);
                 
                 if (result != Constants.ResultCode.DP_SUCCESS)
                 {
-                    OutputError($"Failed to open reader: {result}");
-                    return false;
+                    // Try cooperative if exclusive fails
+                    result = _reader.Open(Constants.CapturePriority.DP_PRIORITY_COOPERATIVE);
+                    if (result != Constants.ResultCode.DP_SUCCESS)
+                    {
+                        OutputError($"Failed to open reader: {result}");
+                        return false;
+                    }
                 }
 
                 return true;
