@@ -7,13 +7,15 @@ import { errorHandler } from './middleware/errorHandler';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// CORS configuration - only allow localhost origins
+// CORS configuration - allow Vercel hosted app and localhost
 const corsOptions = {
   origin: [
     'http://localhost:3000',
     'http://localhost:5173',
     'http://127.0.0.1:3000',
-    'http://127.0.0.1:5173'
+    'http://127.0.0.1:5173',
+    'https://astroattendance-log.vercel.app',
+    /https:\/\/astroattendance.*\.vercel\.app$/
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -32,7 +34,7 @@ app.use('/fingerprint', fingerprintRouter);
 app.use(errorHandler);
 
 // Start server
-app.listen(PORT, () => {
+const server = app.listen(Number(PORT), '0.0.0.0', () => {
   console.log(`
 ╔════════════════════════════════════════════════════════════╗
 ║                                                            ║
@@ -51,4 +53,23 @@ app.listen(PORT, () => {
   `);
 });
 
-export default app;
+server.on('error', (err: any) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use. Please close other applications using this port.`);
+  } else {
+    console.error('Server error:', err);
+  }
+  process.exit(1);
+});
+
+// Keep the process alive
+process.on('SIGINT', () => {
+  console.log('\nShutting down fingerprint service...');
+  server.close(() => {
+    process.exit(0);
+  });
+});
+
+// Prevent the process from exiting
+server.keepAliveTimeout = 65000;
+server.headersTimeout = 66000;
