@@ -1,0 +1,46 @@
+{
+  "name": "AstroBSM Attendance Log",
+  "short_name": "AstroBSM",
+  "description": "Fingerprint-based Attendance, Payroll & Payslip System",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1e40af",
+  "theme_color": "#1e40af",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Clock In/Out",
+      "short_name": "Clock",
+      "description": "Record attendance with fingerprint",
+      "url": "/clock",
+      "icons": [{ "src": "/logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "View Attendance",
+      "short_name": "Attendance",
+      "description": "View attendance history",
+      "url": "/attendance-history",
+      "icons": [{ "src": "/logo.png", "sizes": "192x192" }]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
