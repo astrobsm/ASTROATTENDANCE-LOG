@@ -1,13 +1,17 @@
 // Service Worker for AstroBSM Attendance Log PWA
 // Provides offline functionality and caching
 
-const CACHE_NAME = 'astrobsm-v1';
+const CACHE_NAME = 'astrobsm-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/logo.png'
+  '/logo.png',
+  '/favicon.ico'
 ];
+
+// Dynamic assets to cache on first fetch
+const CACHE_DYNAMIC = true;
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
@@ -79,17 +83,35 @@ self.addEventListener('fetch', (event) => {
 
       // Not in cache, fetch from network
       return fetch(event.request).then((response) => {
-        // Don't cache non-successful responses
-        if (!response || response.status !== 200 || response.type !== 'basic') {
+        // Don't cache non-successful responses or non-basic types
+        if (!response || response.status !== 200) {
           return response;
         }
 
-        // Clone response for caching
-        const responseToCache = response.clone();
+        // Cache all JS, CSS, and image assets for offline use
+        const contentType = response.headers.get('content-type') || '';
+        const url = event.request.url;
+        const shouldCache = CACHE_DYNAMIC && (
+          contentType.includes('javascript') ||
+          contentType.includes('css') ||
+          contentType.includes('image') ||
+          contentType.includes('font') ||
+          url.endsWith('.js') ||
+          url.endsWith('.css') ||
+          url.endsWith('.woff2') ||
+          url.endsWith('.woff') ||
+          url.endsWith('.png') ||
+          url.endsWith('.svg') ||
+          url.endsWith('.ico')
+        );
 
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
-        });
+        if (shouldCache) {
+          // Clone response for caching
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+        }
 
         return response;
       }).catch(() => {
